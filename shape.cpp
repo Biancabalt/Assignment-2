@@ -11,8 +11,9 @@
 
 #include "shape.h"
 #include "constants.h"
+#include <iostream>
 
-
+using std::cerr;
 using std::string;
 // TODO: `#include`s for other local headers, if necessary
 
@@ -22,12 +23,9 @@ using std::string;
 
 
 
-	Shape::Shape(const std::string & type = "empty") 
-	{
-		string type_;
-		string type_art_;
-
-
+	Shape::Shape(const std::string & type = "empty") // I get an error sometimes when its " type = "empty") "
+	{                                                // but I do not get an error when it's "type)"
+	setType(type);
 	}
 	/**
 	* The constructor.
@@ -61,7 +59,26 @@ using std::string;
 	*/
 
 	void Shape::setType(const std::string & type) {
+	type_ = type;
+		if (type == "empty") {
+			type_art_ = "     \n"
+				"     \n"
+				"     \n";
+		}
 
+		else if (type == "triangle") {
+			type_art_ = "  ,  \n"
+				" /  \\\n"
+				"/___\\\n";
+		}
+
+		else if (type == "square") {
+			type_art_ = ".---.\n"
+				"|   |\n"
+				".---.\n";
+		}
+		else
+			cerr << "ERROR: 'Shape::setType': invalid type\n";
 	}
 	/**
 	* Set `type_` to `type`, and set `type_art_` to the appropriate value.
@@ -75,7 +92,7 @@ using std::string;
 
 
 	void Shape::drawToBuffer(Buffer & b, unsigned int x, unsigned int y) const {
-
+		b.set(x, y, type_art_);
 	}
 	/**
 	* Draw `type_art_` onto the `Buffer` at position `x, y`.
