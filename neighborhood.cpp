@@ -6,12 +6,17 @@
 /**
  * Implements of `neighborhood.h`.
  */
-
+#include <chrono>
+#include <thread>
+#include <iostream>
 #include <random>
 #include "constants.h"
 // TODO: `#include`s for other system headers, if necessary
 
 #include "neighborhood.h"
+#include "shape.h"
+
+using std::cerr;
 
 // TODO: `#include`s for other local headers, if necessary
 
@@ -94,7 +99,7 @@ Neighborhood::Neighborhood(unsigned int size_x, unsigned int size_y)
 */
 
 Neighborhood::~Neighborhood() {
-
+	delete[] neighborhood_;
 }
 /**
 * The destructor.
@@ -105,7 +110,14 @@ Neighborhood::~Neighborhood() {
 
 
 Shape Neighborhood::get(unsigned int x, unsigned int y) const {
+	if (x > size_x && y > size_y) {
+		cerr << "ERROR: 'Neighborhood::get': index out of bounds\n";
 
+		exit(1);
+	}
+
+	else
+		return neighborhood_[y * size_x + x];
 }
 /**
 * Return the `Shape` at `neighborhood_[ y * size_x + x ]`.
@@ -118,7 +130,12 @@ Shape Neighborhood::get(unsigned int x, unsigned int y) const {
 */
 
 void Neighborhood::set(unsigned int x, unsigned int y, const Shape & s) {
-
+	if (x > size_x && y > size_y) {
+		cerr << "ERROR: 'Neighborhood::set' : index out of bounds \n";
+		exit(1);
+	}
+	else
+		neighborhood_[y * size_x + x] = s;
 }
 /**
 * Set the `Shape` at `neighborhood_[ y * size_x + x ]` to `s`.
@@ -151,7 +168,22 @@ void Neighborhood::move(unsigned int old_x, unsigned int old_y) {
 
 
 void Neighborhood::animate(unsigned int frames) {
-
+Buffer b(size_x * Shape::size_x, size_y * Shape::size_y);
+	for (int k = 0; k < frames; k++) {
+		for (int y = 0; y < size_y; y++) {
+			for (int x = 0; x < size_x; x++) {
+				neighborhood_[y*size_x + x].drawToBuffer(b, x*Shape::size_x, y*Shape::size_y);
+			}
+		}
+		b.draw();
+		for (int y = 0; y > size_y; y++) {
+			for (int x = 0; x < size_x; x++) {
+				if (!neighborhood_[y*size_x + x].isHappy(*this, x, y))
+					move(x, y);
+			}
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
 }
 /**
 * 1. Create a buffer.
