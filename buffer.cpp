@@ -54,7 +54,7 @@ Buffer::~Buffer()
 
 char Buffer::get(unsigned int x, unsigned int y) const
 {
-	return data_[ y * size_x + x ];
+	
 
 	if (y > size_y && x > size_x) {
 		cerr << "Error: 'Buffer::get': indext out of bounds\n";
@@ -62,6 +62,8 @@ char Buffer::get(unsigned int x, unsigned int y) const
 		exit(1);
 	}
 	
+	else 
+	 	return data_[ y * size_x + x ];
 }
 /**
 * Return the character at `data_[ y * size_x + x ]`.
@@ -75,12 +77,13 @@ char Buffer::get(unsigned int x, unsigned int y) const
 
 void Buffer::set(unsigned int x, unsigned int y, char c)
 {
-	data_[ y * size_x + x] = c ;
+	
 	if (x > size_x && y > size_y) {
 		cerr << "Error: 'Buffer::set': index out of bounds \n";
-
 		exit(1);
 	}
+	else 
+		data_[ y * size_x + x] = c;
 	
 }
 /**
@@ -93,9 +96,17 @@ void Buffer::set(unsigned int x, unsigned int y, char c)
 * to `cerr` and `exit(1)`.
 */
 
-void Buffer::set(unsigned int pos_x, unsigned int pos_y, std::string s)
+void Buffer::set(unsigned int pos_x, unsigned int pos_y, std::string s) // this is where I am having problems I think
 {
-
+for (int i = 0, x = pos_x, y = pos_y; i < s.length(); i++) { // do you know where s.length came from?
+		if (s[i] == '\n') {
+			y++;
+			x = pos_x;
+		}
+		else {
+			set(x++, y, s[i]);
+		}
+	}
 }
 /**
 * Overlay `s` onto `data_`.
